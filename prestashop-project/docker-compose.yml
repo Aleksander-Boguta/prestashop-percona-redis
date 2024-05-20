@@ -7,8 +7,8 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mariadb_root_password
-      MYSQL_DATABASE: prestashop
-      MYSQL_USER: prestashop
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD_FILE: /run/secrets/mariadb_password
     secrets:
       - mariadb_root_password
@@ -17,7 +17,7 @@ services:
       - db_data:/var/lib/mysql
       - ./percona/my.cnf:/etc/my.cnf
     ports:
-      - "5002:5002"  
+      - "${PERCONA_PORT}:5002"
     networks:
       - prestashop-net
 
@@ -38,28 +38,28 @@ services:
     image: prestashop/prestashop:8
     container_name: prestashop
     environment:
-      DB_SERVER: percona
-      DB_NAME: prestashop
-      DB_USER: prestashop
+      DB_SERVER: ${DB_SERVER}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
       DB_PASSWD_FILE: /run/secrets/mariadb_password
-      PS_INSTALL_AUTO: "0"
-      PS_ERASE_DB: "0"
-      PS_DOMAIN: localhost:8080
-      PS_FOLDER_ADMIN: admin
-      PS_FOLDER_INSTALL: install
-      PS_EMAIL: admin@example.com
+      PS_INSTALL_AUTO: ${PS_INSTALL_AUTO}
+      PS_ERASE_DB: ${PS_ERASE_DB}
+      PS_DOMAIN: ${PS_DOMAIN}
+      PS_FOLDER_ADMIN: ${PS_FOLDER_ADMIN}
+      PS_FOLDER_INSTALL: ${PS_FOLDER_INSTALL}
+      PS_EMAIL: ${PS_EMAIL}
       PS_PASSWD_FILE: /run/secrets/prestashop_password
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      PS_DEV_MODE: "1"
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      PS_DEV_MODE: ${PS_DEV_MODE}
       REDIS_PASSWORD_FILE: /run/secrets/redis_password
-      CACHE_SYSTEM: CacheRedis
+      CACHE_SYSTEM: ${CACHE_SYSTEM}
     secrets:
       - mariadb_password
       - prestashop_password
       - redis_password
     ports:
-      - "8080:80"
+      - "${PRESTASHOP_PORT}:80"
     volumes:
       - prestashop_data:/var/www/html
       - ./prestashop/config/settings.inc.php:/var/www/html/config/settings.inc.php
