@@ -1,9 +1,10 @@
 # prestashop-percona-redis
 
-
+Project File Structure:
 ```
 prestashop-project/
 ├── docker-compose.yml
+├── .env
 ├── percona/
 │   ├── Dockerfile
 │   ├── init.sql
