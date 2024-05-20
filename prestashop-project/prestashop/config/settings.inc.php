@@ -1,0 +1,19 @@
+<?php
+define('_DB_SERVER_', 'localhost:3306');
+define('_DB_NAME_', 'prestashop');
+define('_DB_USER_', 'root');
+define('_DB_PASSWD_', file_get_contents('/run/secrets/mariadb_root_password'));
+define('_DB_PREFIX_', 'ps_');
+define('_MYSQL_ENGINE_', 'InnoDB');
+define('_PS_CACHING_SYSTEM_', 'CacheRedis');
+define('_PS_CACHE_ENABLED_', true);
+define('_PS_CREATION_DATE_', '2024-05-20');
+define('_COOKIE_KEY_', 'YOUR_RANDOM_COOKIE_KEY');
+define('_COOKIE_IV_', 'YOUR_RANDOM_COOKIE_IV');
+define('_PS_VERSION_', '1.7.8.8');
+define('_RIJNDAEL_KEY_', 'YOUR_GENERATED_RIJNDAEL_KEY');
+define('_RIJNDAEL_IV_', 'YOUR_GENERATED_RIJNDAEL_IV');
+define('_PS_CACHE_REDIS_SERVER_', 'redis');
+define('_PS_CACHE_REDIS_PORT_', 6379);
+define('_PS_CACHE_REDIS_PASSWORD_', file_get_contents('/run/secrets/redis_password'));
+define('_PS_CACHE_REDIS_DB_', 0);

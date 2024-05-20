@@ -1,0 +1,89 @@
+version: "19"
+
+services:
+  percona:
+    image: percona:latest
+    container_name: percona
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mariadb_root_password
+      MYSQL_DATABASE: prestashop
+      MYSQL_USER: prestashop
+      MYSQL_PASSWORD_FILE: /run/secrets/mariadb_password
+    secrets:
+      - mariadb_root_password
+      - mariadb_password
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./percona/my.cnf:/etc/my.cnf
+    ports:
+      - "5002:5002"  
+    networks:
+      - prestashop-net
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    command: ["redis-server", "--requirepass", "/run/secrets/redis_password"]
+    secrets:
+      - redis_password
+    volumes:
+      - redis_data:/data
+    networks:
+      - prestashop-net
+    depends_on:
+      - percona
+
+  prestashop:
+    image: prestashop/prestashop:8
+    container_name: prestashop
+    environment:
+      DB_SERVER: percona
+      DB_NAME: prestashop
+      DB_USER: prestashop
+      DB_PASSWD_FILE: /run/secrets/mariadb_password
+      PS_INSTALL_AUTO: "0"
+      PS_ERASE_DB: "0"
+      PS_DOMAIN: localhost:8080
+      PS_FOLDER_ADMIN: admin
+      PS_FOLDER_INSTALL: install
+      PS_EMAIL: admin@example.com
+      PS_PASSWD_FILE: /run/secrets/prestashop_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      PS_DEV_MODE: "1"
+      REDIS_PASSWORD_FILE: /run/secrets/redis_password
+      CACHE_SYSTEM: CacheRedis
+    secrets:
+      - mariadb_password
+      - prestashop_password
+      - redis_password
+    ports:
+      - "8080:80"
+    volumes:
+      - prestashop_data:/var/www/html
+      - ./prestashop/config/settings.inc.php:/var/www/html/config/settings.inc.php
+    depends_on:
+      - percona
+      - redis
+    networks:
+      - prestashop-net
+
+secrets:
+  mariadb_root_password:
+    file: ./secrets/mariadb_root_password.txt
+  mariadb_password:
+    file: ./secrets/mariadb_password.txt
+  prestashop_password:
+    file: ./secrets/prestashop_password.txt
+  redis_password:
+    file: ./secrets/redis_password.txt
+
+volumes:
+  db_data:
+  redis_data:
+  prestashop_data:
+
+networks:
+  prestashop-net:
+    driver: bridge
